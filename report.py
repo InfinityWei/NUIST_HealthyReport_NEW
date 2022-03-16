@@ -4,16 +4,14 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime
-import json
 import execjs
-import pathlib
 import os
 import re
 import random
 import sys
-import io
-import lxml
 import hashlib
+import argparse
+import json
 
 
 def login(sess, uname, pwd):
@@ -56,11 +54,12 @@ def login(sess, uname, pwd):
        print("Logging in...")
     login_response = sess.post(login_url, personal_info)
     login_response.encoding = 'utf-8'
-
     if re.search("学院", login_response.text):
-        print("登陆成功!")
+        print("\033[32m登陆成功!\033[01m")
+    elif re.search("书院", login_response.text):
+        print("\033[32m登陆成功!\033[01m")
     else:
-        print("登陆失败!请检查一卡通号和密码。")
+        print("\033[31m登陆失败!请检查一卡通号和密码。\033[01m")
         raise
 
 
@@ -93,9 +92,9 @@ def report(sess):
         info = get_info(sess, header)
     
     if info.status_code == 200:
-        print('获取前一日信息成功！')
+        print('\033[32m获取前一日信息成功！\033[01m')
     else:
-        print("获取信息失败！")
+        print("\033[31m获取信息失败！\033[01m")
         raise
     info.encoding = 'utf-8'
     raw_info = re.search('"rows":\[\{(.*?)}', info.text).group(1)
@@ -125,7 +124,7 @@ def report(sess):
     report_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/T_HEALTH_DAILY_INFO_SAVE.do'
     report_response = sess.post(report_url, data=post_info, headers=header)
     if report_response.status_code == 200:
-        print('打卡成功！')
+        print('\033[32m打卡成功！\033[01m')
         title2 = '今日已自动填报'
         content2 = '填报结果\r=========\r\r* **学号**：'+post_info['USER_ID']+'\r\r* **体温**：'+post_info['TODAY_TEMPERATURE']+'\r\r* **日报编号**：'+post_info['WID']+'\r\r* **时间**：'+time.strftime('%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
         data2 = {
@@ -135,7 +134,7 @@ def report(sess):
         api = "https://sctapi.ftqq.com/这里填写Server酱的SCT代码.send"
         reqs2 = sess.post(api,data = data2)
     else:
-        print("打卡失败！")
+        print("\033[31m打卡失败！\033[01m")
         title2 = '今日打卡失败！'
         content2 = '请检查系统状态'
         data2 = {
@@ -147,13 +146,26 @@ def report(sess):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="NUIST健康日报自动填写")
+    parser.add_argument('-m','--mode',help='用户名/密码读取方式。file选项为读取当前目录下user_data.json, manual选项为手动填写。默认为file模式',default='file')
+    parser.add_argument('-u','--username',help='一卡通/校园门户用户名，默认为学号')
+    parser.add_argument('-p','--password',help='一卡通/校园门户密码')
+    arg = parser.parse_args()
+    mode = arg.mode
+    if mode == 'file':
+        with open("user_data.json","r") as f:
+            user_data = json.load(f)
+        username = user_data['username']
+        password = user_data['password']
+    elif mode == 'manual':
+        username = str(arg.username.strip())
+        password = str(arg.password.strip())
+
+    if username == None or username == "" or password == None or password == "":
+        print(f"\033[31m请正确填写账号密码(当前模式为{mode})\033[01m")
+        exit(0)
+
     sess = requests.session()
-    try:
-        username = sys.argv[1]
-        password = sys.argv[2]
-    except:
-        username = input("一卡通号：")
-        password = input("密码：")
     login(sess, username, password)
     report(sess)
     sess.close()
