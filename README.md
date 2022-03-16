@@ -17,38 +17,60 @@
 
 ### 使用前
 
-如不需要Server酱的填写情况推送服务，请将从129行到136行、从138行到146行的代码删去，如需要，请在135行、145行的api内填入你自己的Server酱SCT代码，就像下面一样。
+如需要Server酱，请在135行、145行的api内填入你自己的Server酱SCT代码，就像下面一样。å
 
 ```python
 api = "https://sctapi.ftqq.com/这里填写Server酱的SCT代码.send"
 ```
 
-### Windows系统
+---
 
-系统需安装好Python3.8以上，pip
+### 使用方式
+> 建议Python版本 >= 3.8
 
-CMD或者PowerShell进入目录
+```
+git clone https://github.com/InfinityWei/NUIST_HealthyReport_NEW.git
+cd NUIST_HealthyReport_NEW  
+pip3 install -r requirements.txt
+```
+登陆方式有两种，但推荐使用第一种(配置文件登陆)，不会在terminal留下history,且每次运行无需重复输入账号密码。  
 
-```powershell
-cd E:\Desktop\DailyHealthReport
+---
+
+#### 方式一(推荐)
+填写`user_data.json`文件
+```json
+{
+    "username":"xxx",
+    "password":"xxx"
+}
+```
+直接运行
+```
+python3 report.py
 ```
 
-安装Python依赖，需要的依赖都已经列在requirements.txt里，**这里需要注意本项目完整运行需要安装tensorflow，如无法安装建议手动下载安装**
-
-```powershell
-pip install -r requirements.txt
+---
+#### 方式二(不推荐)
+在命令中加入账号密码
+```
+python3 -m manual -u xxxx -p xxxx
 ```
 
-py运行run.py文件
+---
 
-```powershell
-python report.py 学号 信息门户密码
+### 自动化运行
+
+> 另外注意，Linux环境下可能需要nodejs环境
+> yum install epel-release
+> yum install nodejs
+
+在服务器上设定定时任务，以每天定时执行
 ```
-
-### Linux系统
-
-Linux系统比较类似，注意Python版本需要3.8以上，否则可能无法正常使用tensorflow，造成验证码无法解决。
-
-
-
-**因隐瞒自身健康状况导致的一切后果，本项目一概不负责！**
+crontab -e
+```
+键入如下命令(每天早上8点运行)
+```
+0 8 * * * python3 xxxx/report.py    # (模式一)
+0 8 * * * python3 report.py -m manual -u xxx -p xxx     # (模式二)
+```
