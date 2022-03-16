@@ -27,7 +27,7 @@ def login(sess, uname, pwd):
          script = f.read()
     encrypt = execjs.compile(script)
     password = encrypt.call(
-         'encryptPassword', pwd, pwdEncryptSalt)
+         '_ep', pwd, pwdEncryptSalt)
     
     
     personal_info = {'username': uname,
