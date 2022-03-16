@@ -1,0 +1,10 @@
+PyExecJS
+lxml
+beautifulsoup4
+opencv_python
+tensorflow
+requests
+numpy
+Pillow
+pycryptodome
+PyYAML
