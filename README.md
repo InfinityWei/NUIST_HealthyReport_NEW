@@ -1,5 +1,5 @@
 # NUIST_HealthyReport_NEW
-可能是首个支持新版健康管理的Python自动填写工具，顺便支持识别统一认证的验证码
+可能是首个支持新版健康管理的Python自动填写工具，顺便支持了一下自动识别统一认证的验证码
 
 新系统与东南大学的系统有部分相似，故本项目基于来自SEU的同学的GitHub项目：https://github.com/cogkitten/seu-daily-report 大量修改而来。
 
