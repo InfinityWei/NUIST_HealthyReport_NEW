@@ -33,7 +33,7 @@ CMD或者PowerShell进入目录
 cd E:\Desktop\DailyHealthReport
 ```
 
-安装Python依赖，需要的依赖都已经列在requirements.txt里
+安装Python依赖，需要的依赖都已经列在requirements.txt里，**这里需要注意本项目完整运行需要安装tensorflow，如无法安装建议手动下载安装**
 
 ```powershell
 pip install -r requirements.txt
