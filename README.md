@@ -15,12 +15,41 @@
 
 **因隐瞒自身健康状况导致的一切后果，本项目一概不负责！**
 
-### 使用前
+---
 
-如需要Server酱，请在135行、145行的api内填入你自己的Server酱SCT代码，就像下面一样。å
+### 可选参数
+```
+usage: report.py [-h] [-m MODE] [-u USERNAME] [-p PASSWORD] [-b BARK] [-k KEY] [-t TITLE] [-c CONTENT]
+[-s SERVER_SCT]
 
-```python
-api = "https://sctapi.ftqq.com/这里填写Server酱的SCT代码.send"
+-h, --help            show this help message and exit
+  -m MODE, --mode MODE  用户名/密码读取方式。file选项为读取当前目录下user_data.json, manual选项为手动填写。默认为file模式
+  -u USERNAME, --username USERNAME
+                        一卡通/校园门户用户名，默认为学号
+  -p PASSWORD, --password PASSWORD
+                        一卡通/校园门户密码
+  -b BARK, --bark BARK  是否开启Bark推送,默认为F。可选T/F
+  -k KEY, --key KEY     Bark推送的个人API
+  -t TITLE, --title TITLE
+                        Bark推送标题,默认为"健康日报"。仅在Bark推送开启时奏效
+  -c CONTENT, --content CONTENT
+                        Bark推送正文。仅在Bark推送开启时奏效
+  -s SERVER_SCT, --server_sct SERVER_SCT
+                        Server酱推送SCT码
+```
+使用样例
+```
+python3 report.py
+使用配置文件读取登陆信息，且不使用推送功能
+
+python3 report.py -m manual -u 2020xxxxxxxx -p xxxxxxxxx
+不读取配置文件，使用手动输入用户名密码的方式登陆
+
+python3 report.py -m manual -u 2020xxxxxxxx -p xxxxxxxxx -b T -k Sdxwo9xxxxxxx -c xxx用户已打卡成功
+使用手动方式登陆，并使用bark推送服务
+
+python3 report.py -m manual -u 2020xxxxxxxx -p xxxxxxxxx -s xxxxxxxx
+使用Server酱推送
 ```
 
 ---
@@ -71,6 +100,12 @@ crontab -e
 ```
 键入如下命令(每天早上8点运行)
 ```
-0 8 * * * python3 xxxx/report.py    # (模式一)
-0 8 * * * python3 report.py -m manual -u xxx -p xxx     # (模式二)
+# 后台运行，并将结果输出至out.file
+0 8 * * * python3 report.py -b T -k Sdxwo9xxxxxxx -c xxx用户已打卡成功 > out.file 2>&1 &
 ```
+---
+
+### 效果图
+![](pic/help.png)
+![](pic/command.png)
+![](pic/bark.png)

@@ -8,7 +8,6 @@ import execjs
 import os
 import re
 import random
-import sys
 import hashlib
 import argparse
 import json
@@ -79,7 +78,7 @@ def get_info(sess, header):
     return info_response
 
 
-def report(sess):
+def report(sess,sct):
     try:
         cookie_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/configSet/noraml/getRouteConfig.do'
         header = get_header(sess, cookie_url)
@@ -124,25 +123,21 @@ def report(sess):
     report_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/T_HEALTH_DAILY_INFO_SAVE.do'
     report_response = sess.post(report_url, data=post_info, headers=header)
     if report_response.status_code == 200:
-        print('\033[32m打卡成功！\033[01m')
+        print(f"\033[32m{post_info['USER_ID']}打卡成功！\033[01m")
         title2 = '今日已自动填报'
         content2 = '填报结果\r=========\r\r* **学号**：'+post_info['USER_ID']+'\r\r* **体温**：'+post_info['TODAY_TEMPERATURE']+'\r\r* **日报编号**：'+post_info['WID']+'\r\r* **时间**：'+time.strftime('%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
-        data2 = {
-           "text":title2,
-           "desp":content2
-           }
-        api = "https://sctapi.ftqq.com/这里填写Server酱的SCT代码.send"
-        reqs2 = sess.post(api,data = data2)
+        
     else:
-        print("\033[31m打卡失败！\033[01m")
+        print(f"\033[31m{post_info['USER_ID']}打卡失败！\033[01m")
         title2 = '今日打卡失败！'
         content2 = '请检查系统状态'
-        data2 = {
-           "text":title2,
-           "desp":content2
-           }
-        api = "https://sctapi.ftqq.com/这里填写Server酱的SCT代码.send"
-        reqs2 = sess.post(api,data = data2)
+
+    data2 = {
+        "text":title2,
+        "desp":content2
+        }
+    api = f"https://sctapi.ftqq.com/{sct}.send"
+    sess.post(api,data = data2)
 
 
 def main():
@@ -150,6 +145,11 @@ def main():
     parser.add_argument('-m','--mode',help='用户名/密码读取方式。file选项为读取当前目录下user_data.json, manual选项为手动填写。默认为file模式',default='file')
     parser.add_argument('-u','--username',help='一卡通/校园门户用户名，默认为学号')
     parser.add_argument('-p','--password',help='一卡通/校园门户密码')
+    parser.add_argument('-b','--bark',help='是否开启Bark推送,默认为F。可选T/F',default='F')
+    parser.add_argument('-k','--key',help='Bark推送的个人API',default='')
+    parser.add_argument('-t','--title',help='Bark推送标题,默认为"健康日报"。仅在Bark推送开启时奏效',default='健康日报')
+    parser.add_argument('-c','--content',help='Bark推送正文。仅在Bark推送开启时奏效')
+    parser.add_argument('-s','--server_sct',help='Server酱推送SCT码',default='')
     arg = parser.parse_args()
     mode = arg.mode
     if mode == 'file':
@@ -167,8 +167,15 @@ def main():
 
     sess = requests.session()
     login(sess, username, password)
-    report(sess)
+    report(sess,arg.server_sct)
     sess.close()
+    if arg.bark == 'T':
+        if arg.key == '':
+            print("\033[31mBark的KEY为空\033[01m")
+        else:
+            url = f'https://api.day.app/{arg.key}/{arg.title}/{arg.content}'
+            requests.get(url)
+            print("\033[32m完成推送!\033[01m")
 
 
 if __name__ == '__main__':
