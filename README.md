@@ -100,7 +100,8 @@ crontab -e
 ```
 键入如下命令(每天早上8点运行)
 ```
-0 8 * * * python3 report.py -b T -k Sdxwo9xxxxxxx -c xxx用户已打卡成功
+# 后台运行，并将结果输出至out.file
+0 8 * * * python3 report.py -b T -k Sdxwo9xxxxxxx -c xxx用户已打卡成功 > out.file 2>&1 &
 ```
 ---
 
