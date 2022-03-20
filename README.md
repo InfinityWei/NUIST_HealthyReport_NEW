@@ -107,4 +107,4 @@ crontab -e
 ### 效果图
 ![](pic/help.png)
 ![](pic/command.png)
-![](pic/bark.jpeg)
+![](pic/bark.png)
