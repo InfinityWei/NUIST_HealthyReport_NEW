@@ -6,7 +6,7 @@ on:
     branches: [main]
   # Run script on daily 7am
   schedule:
-    - cron: '13 8 * * *'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
