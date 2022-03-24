@@ -145,3 +145,7 @@ crontab -e
 ![](pic/help.png)
 ![](pic/command.png)
 ![](pic/bark.png)
+
+### 目前可用的类似项目推荐
+
+**此项目可以一次性签满一个月，能够接受提前填报的朋友也可尝试：** https://github.com/lixiang810/NUISTHealthReport
