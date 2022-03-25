@@ -222,9 +222,9 @@ def main():
     del arg.password
 
     if result['result_code'] == 200:
-        print(f"\033[32m{result['result_msg']['USER_ID']}打卡成功！\033[01m")
+        print(f"\033[32m{result['result_msg']}打卡成功！\033[01m")
     else:
-        print(f"\033[31m{result['result_msg']['USER_ID']}打卡失败！\033[01m")
+        print(f"\033[31m{result['result_msg']}打卡失败！\033[01m")
 
     message_push(arg, result)
 
