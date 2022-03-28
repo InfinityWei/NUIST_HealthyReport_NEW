@@ -101,6 +101,15 @@ def report(sess):
     info.encoding = 'utf-8'
     raw_info = re.search('"rows":\[\{(.*?)}', info.text).group(1)
     raw_info = raw_info.split(',')
+    wid_generate_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/T_HEALTH_DAILY_SETTING_QUERY.do'
+    wid_get_data = {'pageNumber': 1,}
+    wid_get_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/getMyTodayReportWid.do'
+    wid_request = sess.post(wid_generate_url)
+    wid_info = sess.post(wid_get_url,wid_get_data)
+    wid_info.encoding = 'utf-8'
+    wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
+    wid_raw=wid_se.group()
+    wid=wid_raw[6:38]
     post_key = ['BY6', 'BY5', 'BY4', 'BY3', 'TODAY_ISOLATE_CONDITION', 'BY2', 'BY1', 'TODAY_CONDITION', 'BY2_DISPLAY', 'TODAY_BODY_CONDITION', 'TODAY_HEALTH_CODE_DISPLAY', 'CONTACT_HISTORY', 'TODAY_HEALTH_CODE', 'BY4_DISPLAY', 'TODAY_TARRY_CONDITION_DISPLAY', 'BY3_DISPLAY', 'PHONE_NUMBER', 'BY14', 'BY15', 'BY12', 'BY13', 'BY18', 'BY19', 'CHECKED_DISPLAY', 'BY16', 'BY17', 'TODAY_TEMPERATURE', 'CZRQ', 'BY10', 'BY11', 'BY8_DISPLAY', 'TODAY_TARRY_CONDITION', 'CLOCK_SITUATION', 'WID', 'TODAY_NAT_CONDITION',
                 'TODAY_VACCINE_CONDITION_DISPLAY', 'DEPT_NAME', 'CONTACT_HISTORY_DISPLAY', 'CZR', 'TODAY_CONDITION_DISPLAY', 'BY1_DISPLAY', 'TODAY_SITUATION_DISPLAY', 'CZZXM', 'BY20', 'TODAY_ISOLATE_CONDITION_DISPLAY', 'TODAY_VACCINE_CONDITION', 'TODAY_NAT_CONDITION_DISPLAY', 'USER_ID', 'FILL_TIME', 'BY10_DISPLAY', 'DEPT_CODE', 'TODAY_BODY_CONDITION_DISPLAY', 'DEPT_CODE_DISPLAY', 'CHECKED', 'NEED_CHECKIN_DATE', 'CREATED_AT', 'TODAY_SITUATION', 'USER_NAME', 'BY7', 'BY8', 'BY9', 'BY11_DISPLAY']
     utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
@@ -115,9 +124,6 @@ def report(sess):
                 post_info[key] = ''
             else:
                 post_info[key] = val
-    wraw = post_info['USER_ID']+now.strftime("%Y%m%d%H%M%S")
-    hl = hashlib.md5()
-    wid = hashlib.md5(wraw.encode(encoding='utf-8')).hexdigest()
     post_info['CREATED_AT'] = now.strftime("%Y-%m-%d %H:%M:%S")
     post_info['CZRQ'] = now.strftime("%Y-%m-%d %H:%M:%S")
     post_info['FILL_TIME'] = now.strftime(
