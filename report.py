@@ -35,7 +35,7 @@ def login(sess, uname, pwd):
                      'execution': execution,
                      '_eventId': 'submit',
                      }
-    r = requests.get(
+    r = sess.get(
         "https://authserver.nuist.edu.cn/authserver/checkNeedCaptcha.htl?username=" + uname)
     if r.text == '{"isNeed":true}':
         print("CAPTCHA required")
