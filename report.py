@@ -57,7 +57,7 @@ def login(sess, uname, pwd):
     login_response.encoding = 'utf-8'
     if re.search("学院", login_response.text):
         print("\033[32m登陆成功!\033[01m")
-    elif re.search("书院", login_response.text):
+    elif re.search("院", login_response.text):
         print("\033[32m登陆成功!\033[01m")
     else:
         print("\033[31m登陆失败!请检查一卡通号和密码。\033[01m")
@@ -105,11 +105,21 @@ def report(sess):
     wid_get_data = {'pageNumber': 1,}
     wid_get_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/getMyTodayReportWid.do'
     wid_request = sess.post(wid_generate_url)
-    wid_info = sess.post(wid_get_url,wid_get_data)
+    wid_info = sess.post(wid_get_url,wid_get_data,headers=header)
     wid_info.encoding = 'utf-8'
     wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
     wid_raw=wid_se.group()
     wid=wid_raw[6:38]
+    if wid == 'D2B0CA5995663540E053EFEBC3CAF703':              #防止获取到默认主键导致填报失败，目前发现再获取一遍应该会正常
+        wid_request = sess.post(cookie_url4)
+        wid_info = sess.post(cookie_url3,data3,headers=header)
+        wid_info = sess.post(cookie_url3,data3,headers=header)
+        wid_info.encoding = 'utf-8'
+        wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
+        wid_raw=wid_se.group()
+        wid=wid_raw[6:38]
+    else:
+        print('WID获取正常')
     post_key = ['BY6', 'BY5', 'BY4', 'BY3', 'TODAY_ISOLATE_CONDITION', 'BY2', 'BY1', 'TODAY_CONDITION', 'BY2_DISPLAY', 'TODAY_BODY_CONDITION', 'TODAY_HEALTH_CODE_DISPLAY', 'CONTACT_HISTORY', 'TODAY_HEALTH_CODE', 'BY4_DISPLAY', 'TODAY_TARRY_CONDITION_DISPLAY', 'BY3_DISPLAY', 'PHONE_NUMBER', 'BY14', 'BY15', 'BY12', 'BY13', 'BY18', 'BY19', 'CHECKED_DISPLAY', 'BY16', 'BY17', 'TODAY_TEMPERATURE', 'CZRQ', 'BY10', 'BY11', 'BY8_DISPLAY', 'TODAY_TARRY_CONDITION', 'CLOCK_SITUATION', 'WID', 'TODAY_NAT_CONDITION',
                 'TODAY_VACCINE_CONDITION_DISPLAY', 'DEPT_NAME', 'CONTACT_HISTORY_DISPLAY', 'CZR', 'TODAY_CONDITION_DISPLAY', 'BY1_DISPLAY', 'TODAY_SITUATION_DISPLAY', 'CZZXM', 'BY20', 'TODAY_ISOLATE_CONDITION_DISPLAY', 'TODAY_VACCINE_CONDITION', 'TODAY_NAT_CONDITION_DISPLAY', 'USER_ID', 'FILL_TIME', 'BY10_DISPLAY', 'DEPT_CODE', 'TODAY_BODY_CONDITION_DISPLAY', 'DEPT_CODE_DISPLAY', 'CHECKED', 'NEED_CHECKIN_DATE', 'CREATED_AT', 'TODAY_SITUATION', 'USER_NAME', 'BY7', 'BY8', 'BY9', 'BY11_DISPLAY']
     utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
