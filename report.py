@@ -108,19 +108,12 @@ def report(sess):
     wid_info = sess.post(wid_get_url,wid_get_data,headers=header)
     wid_info.encoding = 'utf-8'
     wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
-    wid_raw=wid_se.group()
-    wid=wid_raw[6:38]
-    if wid == 'D2B0CA5995663540E053EFEBC3CAF703':              #防止获取到默认主键导致填报失败，目前发现再获取一遍应该会正常
-        wid_request = sess.post(cookie_url4)
-        wid_info = sess.post(cookie_url3,data3,headers=header)
-        wid_info = sess.post(cookie_url3,data3,headers=header)
-        wid_info.encoding = 'utf-8'
-        wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
+    if wid_se == None:
+        wid =''
+    else:
         wid_raw=wid_se.group()
         wid=wid_raw[6:38]
-    else:
-        print('WID获取正常')
-    post_key = ['BY6', 'BY5', 'BY4', 'BY3', 'TODAY_ISOLATE_CONDITION', 'BY2', 'BY1', 'TODAY_CONDITION', 'BY2_DISPLAY', 'TODAY_BODY_CONDITION', 'TODAY_HEALTH_CODE_DISPLAY', 'CONTACT_HISTORY', 'TODAY_HEALTH_CODE', 'BY4_DISPLAY', 'TODAY_TARRY_CONDITION_DISPLAY', 'BY3_DISPLAY', 'PHONE_NUMBER', 'BY14', 'BY15', 'BY12', 'BY13', 'BY18', 'BY19', 'CHECKED_DISPLAY', 'BY16', 'BY17', 'TODAY_TEMPERATURE', 'CZRQ', 'BY10', 'BY11', 'BY8_DISPLAY', 'TODAY_TARRY_CONDITION', 'CLOCK_SITUATION', 'WID', 'TODAY_NAT_CONDITION',
+    post_key = ['BY6', 'BY5', 'BY4', 'BY3', 'TODAY_ISOLATE_CONDITION', 'BY2', 'BY1', 'TODAY_CONDITION', 'BY2_DISPLAY', 'TODAY_BODY_CONDITION', 'TODAY_HEALTH_CODE_DISPLAY', 'CONTACT_HISTORY', 'TODAY_HEALTH_CODE', 'BY4_DISPLAY', 'TODAY_TARRY_CONDITION_DISPLAY', 'BY3_DISPLAY', 'PHONE_NUMBER', 'BY14', 'BY15', 'BY12', 'BY13', 'BY18', 'BY19', 'CHECKED_DISPLAY', 'BY16', 'BY17', 'TODAY_TEMPERATURE', 'CZRQ', 'BY10', 'BY11', 'BY8_DISPLAY', 'TODAY_TARRY_CONDITION', 'CLOCK_SITUATION', 'TODAY_NAT_CONDITION',
                 'TODAY_VACCINE_CONDITION_DISPLAY', 'DEPT_NAME', 'CONTACT_HISTORY_DISPLAY', 'CZR', 'TODAY_CONDITION_DISPLAY', 'BY1_DISPLAY', 'TODAY_SITUATION_DISPLAY', 'CZZXM', 'BY20', 'TODAY_ISOLATE_CONDITION_DISPLAY', 'TODAY_VACCINE_CONDITION', 'TODAY_NAT_CONDITION_DISPLAY', 'USER_ID', 'FILL_TIME', 'BY10_DISPLAY', 'DEPT_CODE', 'TODAY_BODY_CONDITION_DISPLAY', 'DEPT_CODE_DISPLAY', 'CHECKED', 'NEED_CHECKIN_DATE', 'CREATED_AT', 'TODAY_SITUATION', 'USER_NAME', 'BY7', 'BY8', 'BY9', 'BY11_DISPLAY']
     utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
     now = utc_dt.astimezone(timezone(timedelta(hours=8)))
@@ -139,7 +132,13 @@ def report(sess):
     post_info['FILL_TIME'] = now.strftime(
         "%Y-%m-%d")+" "+now.strftime("%H:%M:%S")
     post_info['NEED_CHECKIN_DATE'] = now.strftime("%Y-%m-%d")
-    post_info['WID'] = wid
+    global pushwid
+    if wid != '':
+        post_info['WID'] = wid
+        pushwid=wid
+    else:
+        print("今日无WID，系统会自动分配")
+        pushwid='今日无编号，系统会自动分配'
     post_info['TODAY_TEMPERATURE'] = str(
         random.randint(355, 365) / 10).ljust(3, '0')[:4]
 
@@ -152,7 +151,7 @@ def message_push(data, result):
     if result['result_code'] == 200:
         title = '今日已自动填报'
         content = '填报结果\r=========\r\r* **学号**：'+result['result_msg']['USER_ID']+'\r\r* **体温**：'+result['result_msg']['TODAY_TEMPERATURE'] + \
-            '\r\r* **日报编号**：'+result['result_msg']['WID']+'\r\r* **时间**：'+time.strftime(
+            '\r\r* **日报编号**：'+pushwid+'\r\r* **时间**：'+time.strftime(
                 '%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
     else:
         title = '今日打卡失败！'
