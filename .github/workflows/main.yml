@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Run script on daily 7am
+  # Run script on daily 9:30am
   schedule:
     - cron: '30 1 * * *'
   workflow_dispatch:
