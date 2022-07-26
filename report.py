@@ -56,9 +56,7 @@ def login(sess, uname, pwd):
         print("Logging in...")
     login_response = sess.post(login_url, personal_info)
     login_response.encoding = 'utf-8'
-    if re.search("学院", login_response.text):
-        print("\033[32m登陆成功!\033[01m")
-    elif re.search("院", login_response.text):
+    if login_response.status_code ==200:
         print("\033[32m登陆成功!\033[01m")
     else:
         print("\033[31m登陆失败!请检查一卡通号和密码。\033[01m")
@@ -103,9 +101,6 @@ def report(sess):
     else:
         print("\033[31m获取信息失败！\033[01m")
         raise
-#     info.encoding = 'utf-8'
-#     raw_info = re.search('"rows":\[\{(.*?)}', info.text).group(1)
-#     raw_info = raw_info.split(',')
     rinfo = info.text
     json_info = json.loads(rinfo)
     raw_info =json_info['datas']['getMyDailyReportDatas']['rows'][0]
@@ -121,20 +116,10 @@ def report(sess):
     else:
         wid_raw=wid_se.group()
         wid=wid_raw[6:38]
-#     post_key = ['BY6', 'BY5', 'BY4', 'BY3', 'TODAY_ISOLATE_CONDITION', 'BY2', 'BY1', 'TODAY_CONDITION', 'BY2_DISPLAY', 'TODAY_BODY_CONDITION', 'TODAY_HEALTH_CODE_DISPLAY', 'CONTACT_HISTORY', 'TODAY_HEALTH_CODE', 'BY4_DISPLAY', 'TODAY_TARRY_CONDITION_DISPLAY', 'BY3_DISPLAY', 'PHONE_NUMBER', 'BY14', 'BY15', 'BY12', 'BY13', 'BY18', 'BY19', 'CHECKED_DISPLAY', 'BY16', 'BY17', 'TODAY_TEMPERATURE', 'CZRQ', 'BY10', 'BY11', 'BY8_DISPLAY', 'TODAY_TARRY_CONDITION', 'CLOCK_SITUATION', 'TODAY_NAT_CONDITION',
-#                 'TODAY_VACCINE_CONDITION_DISPLAY', 'DEPT_NAME', 'CONTACT_HISTORY_DISPLAY', 'CZR', 'TODAY_CONDITION_DISPLAY', 'BY1_DISPLAY', 'TODAY_SITUATION_DISPLAY', 'CZZXM', 'BY20', 'TODAY_ISOLATE_CONDITION_DISPLAY', 'TODAY_VACCINE_CONDITION', 'TODAY_NAT_CONDITION_DISPLAY', 'USER_ID', 'FILL_TIME', 'BY10_DISPLAY', 'DEPT_CODE', 'TODAY_BODY_CONDITION_DISPLAY', 'DEPT_CODE_DISPLAY', 'CHECKED', 'NEED_CHECKIN_DATE', 'CREATED_AT', 'TODAY_SITUATION', 'USER_NAME', 'BY7', 'BY8', 'BY9', 'BY11_DISPLAY']
-    utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
+
     now = utc_dt.astimezone(timezone(timedelta(hours=8)))
     post_info = raw_info
-#     for info in raw_info:
-#         key_value = info.split(':', 1)
-#         key = key_value[0].strip('"')
-#         val = key_value[1].strip('"')
-#         if key in post_key:
-#             if val == 'null':
-#                 post_info[key] = ''
-#             else:
-#                 post_info[key] = val
+
     post_info['CREATED_AT'] = now.strftime("%Y-%m-%d %H:%M:%S")
     post_info['CZRQ'] = now.strftime("%Y-%m-%d %H:%M:%S")
     post_info['FILL_TIME'] = now.strftime(
