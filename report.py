@@ -56,8 +56,11 @@ def login(sess, uname, pwd):
         print("Logging in...")
     login_response = sess.post(login_url, personal_info)
     login_response.encoding = 'utf-8'
-    if login_response.status_code ==200:
-        print("\033[32m登陆成功!\033[01m")
+    if re.search("请稍等", login_response.text):
+        while re.search("请稍等", login_response.text):
+            login_response = sess.post(login_url, personal_info)
+    elif re.search("院", login_response.text):
+        print("登陆成功!")
     else:
         print("\033[31m登陆失败!请检查一卡通号和密码。\033[01m")
         raise
@@ -65,9 +68,12 @@ def login(sess, uname, pwd):
 
 def get_header(sess, cookie_url):
     cookie_response = sess.get(cookie_url)
-    if re.search("请稍等", cookie_response.text):
-        cookie_response = sess.get(cookie_url)
-    weu = requests.utils.dict_from_cookiejar(cookie_response.cookies)['_WEU']
+    if re.search('{"', cookie_response.text):
+        weu = requests.utils.dict_from_cookiejar(cookie_response.cookies)['_WEU']
+    else:
+        while re.search("请稍等", cookie_response.text):
+            cookie_response = sess.get(cookie_url)
+            weu = requests.utils.dict_from_cookiejar(cookie_response.cookies)['_WEU']
     cookie = requests.utils.dict_from_cookiejar(sess.cookies)
 
     header = {'Referer': 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/index.do#/healthClock',
@@ -77,8 +83,9 @@ def get_header(sess, cookie_url):
 
 def get_info(sess, header):
     info_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/getMyDailyReportDatas.do'
-    info_response = sess.post(
-        info_url, data={'pageSize': '10', 'pageNumber': '1'}, headers=header)
+    info_response = sess.post(info_url, data={'pageSize': '10', 'pageNumber': '1'}, headers=header)
+    while re.search("请稍等", info_response.text):
+        info_response = sess.post(info_url, data={'pageSize': '10', 'pageNumber': '1'}, headers=header)
     return info_response
 
 
@@ -95,11 +102,12 @@ def report(sess):
         info = get_info(sess, header)
 
     if re.search("请稍等", info.text):
-        info = get_info(sess, header)
+        while re.search("请稍等", info.text):
+            info = get_info(sess, header)
     elif re.search("getMyDailyReportDatas", info.text):
-        print('\033[32m获取前一日信息成功！\033[01m')
+        print('获取前一日信息成功！')
     else:
-        print("\033[31m获取信息失败！\033[01m")
+        print("获取信息失败！")
         raise
     rinfo = info.text
     json_info = json.loads(rinfo)
