@@ -136,14 +136,20 @@ def report(sess):
     wid_get_url = 'http://i.nuist.edu.cn/qljfwapp/sys/lwNuistHealthInfoDailyClock/modules/healthClock/getMyTodayReportWid.do'
     wid_request = sess.post(wid_generate_url)
     wid_info = sess.post(wid_get_url,wid_get_data,headers=header)
-    wid_info.encoding = 'utf-8'
-    wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
+    wid_rinfo = wid_info.text
+    wid_jinfo = json.loads(wid_rinfo)
+    wid_size = wid_jinfo['datas']['getMyTodayReportWid']['totalSize']
+    try:
+        wid_se = wid_jinfo['datas']['getMyTodayReportWid']['rows'][wid_size-1]['WID']
+    except:
+        wid_se = None
+    # wid_se = re.search('WID":\"(.*?)\"', wid_info.text)
     if wid_se == None:
         wid =''
     else:
+        # wid_raw=wid_se.group()
+        # wid=wid_raw[6:38]
         wid = wid_se
-#         wid_raw=wid_se.group()
-#         wid=wid_raw[6:38]
     utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
     now = utc_dt.astimezone(timezone(timedelta(hours=8)))
     post_info = raw_info
@@ -171,7 +177,7 @@ def report(sess):
 def message_push(data, result):
     if result['result_code'] == 200:
         title = '今日已自动填报'
-        content = '填报结果\r=========\r\r* **学号**：'+result['result_msg']['USER_ID']+'\r\r* **体温**：'+result['result_msg']['TODAY_TEMPERATURE'] +'\r\r* **日报编号**：'+pushwid+'\r\r* **时间**：'+time.strftime('%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
+        content = '填报结果\r=========\r\r* **学号**：'+result['result_msg']['USER_ID']+'\r\r* **体温**：'+result['result_msg']['TODAY_TEMPERATURE']+'\r\r* **日报编号**：'+pushwid+'\r\r* **时间**：'+time.strftime('%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
     else:
         title = '今日打卡失败！'
         content = '请检查系统状态'
