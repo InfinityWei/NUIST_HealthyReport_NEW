@@ -20,4 +20,4 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run script
         run: |
-          python report.py
+          python report.py -m manual -u ${{secrets.STU_ID}} -p ${{secrets.STU_PASS}}
