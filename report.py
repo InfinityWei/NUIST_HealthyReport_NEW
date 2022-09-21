@@ -171,9 +171,7 @@ def report(sess):
 def message_push(data, result):
     if result['result_code'] == 200:
         title = '今日已自动填报'
-        content = '填报结果\r=========\r\r* **学号**：'+result['result_msg']['USER_ID']+'\r\r* **体温**：'+result['result_msg']['TODAY_TEMPERATURE'] + \
-            '\r\r* **日报编号**：'+pushwid+'\r\r* **时间**：'+time.strftime(
-                '%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
+        content = '填报结果\r=========\r\r* **学号**：'+result['result_msg']['USER_ID']+'\r\r* **体温**：'+result['result_msg']['TODAY_TEMPERATURE'] +'\r\r* **日报编号**：'+pushwid+'\r\r* **时间**：'+time.strftime('%Y-%m-%d %H:%M:%S')+'\r\r* **统一认证验证码**：'+captcha+'\r\r填报成功！'
     else:
         title = '今日打卡失败！'
         content = '请检查系统状态'
