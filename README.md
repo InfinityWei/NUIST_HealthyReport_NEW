@@ -1,5 +1,7 @@
 # NUIST_HealthyReport_NEW
 
+[![GitHub Actions Auto Health Report](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml/badge.svg)](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml)
+
 可能是首个支持新版健康管理的 Python 自动填写工具，顺便支持了一下自动识别统一认证的验证码
 
 新系统与东南大学的系统有部分相似，故本项目基于来自 SEU 的同学的 GitHub 项目：https://github.com/cogkitten/seu-daily-report 大量修改而来。
