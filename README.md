@@ -1,6 +1,6 @@
 # NUIST_HealthyReport_NEW
 
-[![GitHub Actions Auto Health Report](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml/badge.svg)](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml)
+[![GitHub Actions Auto Health Report](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/InfinityWei/NUIST_HealthyReport_NEW/actions/workflows/main.yml)
 
 可能是首个支持新版健康管理的 Python 自动填写工具，顺便支持了一下自动识别统一认证的验证码
 
